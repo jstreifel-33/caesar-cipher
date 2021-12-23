@@ -1,3 +1,15 @@
+import re
+import nltk
+
+nltk.download('words', quiet=True)
+nltk.download('names', quiet=True)
+
+from nltk.corpus import words, names
+
+word_list = words.words()
+name_list = names.words()
+
+
 def encrypt(text, shift_num):
     encoded_string = ""
 
@@ -15,8 +27,26 @@ def encrypt(text, shift_num):
 
     return encoded_string
 
+
 def decrypt(encoded, shift_num):
     return encrypt(encoded, -shift_num)
 
+
 def crack(encoded):
-    pass
+    for shift in range(26):
+        test_string = decrypt(encoded, shift)
+        words = test_string.split()
+
+        word_count = 0
+
+        for word in words:
+            word = re.sub(r"[^a-zA-Z]", "", word)
+            if word.lower() in word_list or word in name_list:
+                word_count += 1
+        
+        solution_score = int((word_count / len(words)) * 100)
+
+        if solution_score > 90:
+            return test_string
+    
+    return ''
